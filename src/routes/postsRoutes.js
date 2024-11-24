@@ -1,6 +1,12 @@
 import express from "express";
 import multer from "multer";
-import { listarPosts, postarNovoPost, uploadImagem } from "../controllers/postsControlles.js";
+import { listarPosts, postarNovoPost, uploadImagem, atualizarNovoPost } from "../controllers/postsControlles.js";
+import cors from "cors";
+
+const corsOptions = {
+  origin: "http://localhost:8000", 
+  optionsSuccessStatus: 200
+}
 
 // Importa o express para criar a aplicação web
 // Importa o multer para lidar com uploads de arquivos
@@ -17,14 +23,14 @@ const storage = multer.diskStorage({
   }
 });
 
-const upload = multer({ storage });
+const upload = multer({ storage: storage });
 //  Configura o multer para usar o storage personalizado
 
 // Define a rota base para a API (opcional)
 const routes = (app) => {
   // Habilita o parser JSON para processar requisições no formato JSON
   app.use(express.json());
-
+  app.use(cors(corsOptions));
   // Rota GET para listar todos os posts
   app.get("/posts", listarPosts);
 
@@ -33,6 +39,8 @@ const routes = (app) => {
 
   // Rota POST para upload de imagem e criação de post
   app.post("/upload", upload.single("imagem"), uploadImagem);
+
+  app.put("/upload/:id", atualizarNovoPost);
 };
 
 export default routes;
